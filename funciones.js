@@ -38,7 +38,7 @@ function game() {
     let computerScore = 0; // Aqui empiezan los contadores en 0
     
     for( let i = 0; i < 5; i++) {     // Creamos un bucle for para decirle que se jugara 5 veces 
-        let playerSelection = prompt('Elige: Piedra, Papel o Tijera').toLowerCase();// Aqui un mensaje que se vera en pantalla pidiendole que elija varias opciones( Hay que poner normas ya que cuando poner cualquier cosa directamente le da la puntuacion a la maquina)
+        let playerSelection = prompt('Elige: Piedra, Papel o Tijera');// Aqui un mensaje que se vera en pantalla pidiendole que elija varias opciones( Hay que poner normas ya que cuando poner cualquier cosa directamente le da la puntuacion a la maquina)
         let computerSelection = getComputerChoice();  // Aqui estamos trayendo la funcion que cogia aleatoriamente 3 opciones para que haga de maquina y sea ella sin ayuda de nadie que de varias opciones al azar.
         let resultado = partida(playerSelection,computerSelection);      // Añadimos a la variable resultado la funcion partida la cual le dara las normas del juego para saber quien gana o pierde
         if(resultado.includes('You Lose Compunter!')) {  // Aqui añado una manera de saber quien a ganado o perdiendo cogiendo el return de la funcion partida que decia "You Lose Computer" con lo cual le dara el punto al player
