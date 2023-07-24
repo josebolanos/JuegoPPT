@@ -1,73 +1,158 @@
-// Aqui uso la funcion Math.random porque me generaba un numero aleatorio entre 0 y 1 lo tuve que multiplicar por 3 para que buscara cerca del 3 numeros aletarios (emplos 0,233232,1,33232,2,32323 etc..)
-//Aqui tambien use el Math.floor porque redondea un numero entero hacia abajo con lo cual siempre me iva a a dar  0 , 1 , 2 cosa que necesitaba para sacar 3 opciones Piedra, Papel, Tijera
-function getComputerChoice() {
-    let ramdomNumber = Math.floor(Math.random() * 3);
-   
-    if(ramdomNumber === 0) {
-        return 'Piedra'
-    } else if (ramdomNumber === 1){
-        return 'Papel'
-    } else { // Aqui sera cuando caiga en 2
-        return 'Tijera'; 
-    }
-} 
+let playerScore = 0;
+let computerScore = 0;
 
-//Aqui creo una funcion con 2 opciones las cuales voy a explicar mejor en cada linea
+// Crea los elementos en el DOM
+const scoreContainer = document.createElement('div');
+scoreContainer.innerHTML = `
+    <p>Puntuación:</p>
+    <p>Jugador: <span id="player-score">0</span></p>
+    <p>Computadora: <span id="computer-score">0</span></p>
+`;
+document.body.appendChild(scoreContainer);
 
-function partida(playerSelection, computerSelection) {
-   
-    computerSelection =  getComputerChoice();//Esta parte esta llamando a la funcion que daba 3 opciones mas arriba para que me deje alguna opcion piedra, papel o tijera.
-    playerSelection= getComputerChoice()//Esta parte esta llamando a la funcion que daba 3 opciones mas arriba para que me deje alguna opcion piedra, papel o tijera.
-  
-   
-    // En  esta parte digamos que Playerselection y computerSelection ya tienen un valor asignado y le estoy diciendo quien ganara o perdera segun lo que salga.Digamos que estoy diciendo las normas del juego.
-    if( playerSelection ===  'Tijera' && computerSelection === 'Papel' || 
-    playerSelection === 'Piedra' && computerSelection === 'Tijera' || 
-    playerSelection === 'Papel' && computerSelection === 'Piedra' ) {  
-         return  'You Lose Compunter!';
+const resultElement = document.createElement('div');
+resultElement.id = 'result';
+document.body.appendChild(resultElement);
+
+const gameResultElement = document.createElement('div');
+gameResultElement.id = 'game-result';
+document.body.appendChild(gameResultElement);
+
+// Función para actualizar la puntuación en el DOM
+function updateScore() {
+    const playerScoreElement = document.getElementById('player-score');
+    const computerScoreElement = document.getElementById('computer-score');
+
+    playerScoreElement.textContent = playerScore;
+    computerScoreElement.textContent = computerScore;
+}
+
+
+
+// Función para mostrar los resultados en el DOM
+function displayResult(result) {
+    const resultElement = document.getElementById('result');
+    resultElement.textContent = result;
+}
+
+// Función para finalizar el juego y mostrar el resultado final en el DOM
+function endGame() {
+    let winner;
+    if (playerScore > computerScore) {
+        winner = '¡Ganaste el juego!';
+    } else if (playerScore < computerScore) {
+        winner = '¡Perdiste el juego!';
     } else {
-        return'You Lose Player!'    
+        winner = 'Empate';
     }
-   
-   
-}
 
-// Aqui creo una funcion game que tendra que tener un contador y un ganador aparte un cuadri visual en donde el player pondra su eleccion en esta parte ya el player juega.
-function game() {
-    let playerScore = 0; // Aqui empiezan los contadores en 0
-    let computerScore = 0; // Aqui empiezan los contadores en 0
-    
-    for( let i = 0; i < 5; i++) {     // Creamos un bucle for para decirle que se jugara 5 veces 
-        let playerSelection = prompt('Elige: Piedra, Papel o Tijera');// Aqui un mensaje que se vera en pantalla pidiendole que elija varias opciones( Hay que poner normas ya que cuando poner cualquier cosa directamente le da la puntuacion a la maquina)
-        let computerSelection = getComputerChoice();  // Aqui estamos trayendo la funcion que cogia aleatoriamente 3 opciones para que haga de maquina y sea ella sin ayuda de nadie que de varias opciones al azar.
-        let resultado = partida(playerSelection,computerSelection);      // Añadimos a la variable resultado la funcion partida la cual le dara las normas del juego para saber quien gana o pierde
-        if(resultado.includes('You Lose Compunter!')) {  // Aqui añado una manera de saber quien a ganado o perdiendo cogiendo el return de la funcion partida que decia "You Lose Computer" con lo cual le dara el punto al player
-            playerScore++ ;
-        } else {
-            computerScore++; // Aqui se ve claro que sera lo contrario si no es al jugador 
-        }
+    const gameResultElement = document.getElementById('game-result');
+    gameResultElement.textContent = winner;
 
-        // Para hacerlo mas visual y ver como vas la partida aqui he puesto estos consoles.log()
-        console.log("Puntuación actual:");
-        console.log("Jugador: " + playerScore);
-        console.log("Computadora: " + computerScore);
-    } 
-   
-        // En esta parte es para describir quien gana y pierde se ve claramente que si el player tiene mas puntos que el computer ganara y se imprimira dicho resultado en la consola
-        if( playerScore > computerScore) {
-            return'Player you Win'
-        } else if(playerScore < computerScore){
-            return'Player you Lose'
-        } else {
-            return 'Empate'
-        }
+    // Restablecer el resultado de cada ronda a un espacio en blanco
+    const resultElement = document.getElementById('result');
+    resultElement.textContent = '';
 
+
+    //Deshabilitar los botones
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach((button) => {
+      button.disabled = true;
+    });
+
+
+    // Mostrar un texto de aviso antes de reiniciar el juego
+    const restartTextElement = document.createElement('p');
+    restartTextElement.textContent = 'El juego se reiniciará en 5 segundos...';
+    document.body.appendChild(restartTextElement);
+
+    // Esperar 5 segundos antes de reiniciar el juego
+    setTimeout(function () {
+        restartTextElement.remove();
+        restartGame();
+    }, 5000);
    
 }
 
- 
-     // Podria a ver puesto direcamente game() pero queria tenerlo dentro de resultado por si queria usarlo mas fasilmente.
-     let resultado = game()
-     console.log(resultado);
+function restartGame() {
+    // Reiniciar los puntajes
+    playerScore = 0;
+    computerScore = 0;
+    updateScore();
 
-    
+    // Habilitar los botones
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach((button) => {
+        button.disabled = false;
+    });
+
+    // Limpiar los resultados
+    const resultElement = document.getElementById('result');
+    resultElement.textContent = '';
+
+    const gameResultElement = document.getElementById('game-result');
+    gameResultElement.textContent = '';
+}
+
+
+// Función para jugar una ronda
+function playRound(playerSelection) {
+    const computerSelection = getComputerChoice();
+    let result;
+
+    if (
+        (playerSelection === 'Tijera' && computerSelection === 'Papel') ||
+        (playerSelection === 'Piedra' && computerSelection === 'Tijera') ||
+        (playerSelection === 'Papel' && computerSelection === 'Piedra')
+    ) {
+        result = 'Ganaste esta ronda!';
+        playerScore++;
+    } else if (playerSelection === computerSelection) {
+        result = 'Empate!';
+    } else {
+        result = 'Perdiste esta ronda!';
+        computerScore++;
+    }
+
+    updateScore();
+    displayResult(result);
+
+    if (playerScore === 5 || computerScore === 5) {
+        endGame();
+    }
+}
+
+// Función para obtener la selección aleatoria de la computadora
+function getComputerChoice() {
+    const randomNumber = Math.floor(Math.random() * 3);
+
+    if (randomNumber === 0) {
+        return 'Piedra';
+    } else if (randomNumber === 1) {
+        return 'Papel';
+    } else {
+        return 'Tijera';
+    }
+}
+
+// Obtén referencias a los botones y añade event listeners
+const rockButton = document.createElement('button');
+rockButton.textContent = 'Piedra';
+rockButton.addEventListener('click', function () {
+    playRound('Piedra');
+});
+document.body.appendChild(rockButton);
+
+const paperButton = document.createElement('button');
+paperButton.textContent = 'Papel';
+paperButton.addEventListener('click', function () {
+    playRound('Papel');
+});
+document.body.appendChild(paperButton);
+
+const scissorsButton = document.createElement('button');
+scissorsButton.textContent = 'Tijera';
+scissorsButton.addEventListener('click', function () {
+    playRound('Tijera');
+});
+document.body.appendChild(scissorsButton);
